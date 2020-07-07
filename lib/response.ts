@@ -11,11 +11,14 @@ export class Response {
     resources: Closer[] = [];
 
     getHttpResponse(): http.Response {
-        let { status = 200, headers, body = new Uint8Array() } = this;
+        const { status = 200, headers } = this;
+        let { body = new Uint8Array() } = this;
+
         if (typeof body === "string") {
             body = new TextEncoder().encode(body);
             if (!headers.has('Content-Type')) headers.append("Content-Type", "text/plain");
         }
+
         return { status, headers, body };
     }
 
@@ -33,34 +36,39 @@ export class Response {
         this.headers.append(key, value);
     }
 
-    async empty(status: number): Promise<void> {
+    async setStatus(status: number): Promise<void> {
         this.status = status;
     }
 
-    async json(json: any): Promise<void> {
+    async setJson(json: any): Promise<void> {
         this.headers.append("Content-Type", "application/json");
         this.body = JSON.stringify(json);
     }
 
     async file(filepath: string, transform?: (source: string) => string): Promise<void> {
-        const notModified = false;
-        if (notModified) {
-            this.status = 304;
-            return;
-        }
-        const extname: string = path.extname(filepath);
-        const contentType: any = lookup(extname.slice(1)) || '';
-        const info = await stat(filepath);
-        if (!info.isFile) return;
-        this.appendHeader("Content-Type", contentType);
-        if (transform) {
-            const bytes = await readFile(filepath);
-            const str = transform(new TextDecoder().decode(bytes));
-            this.body = new TextEncoder().encode(str);
-        } else {
-            const file = await open(filepath);
-            this.resources.push(file);
-            this.body = file;
+        try {
+            const notModified = false;
+            if (notModified) {
+                this.status = 304;
+                return;
+            }
+            const extname: string = path.extname(filepath);
+            const contentType: any = lookup(extname.slice(1)) || '';
+            const info = await stat(filepath);
+            if (!info.isFile) { return; };
+            this.appendHeader("Content-Type", contentType);
+            if (transform) {
+                const bytes = await readFile(filepath);
+                const str = transform(new TextDecoder().decode(bytes));
+                this.body = new TextEncoder().encode(str);
+            } else {
+                const file = await open(filepath);
+                this.resources.push(file);
+                this.body = file;
+            }
+        } catch (err) {
+            console.error(err);
+            this.status = 404;
         }
     }
 }

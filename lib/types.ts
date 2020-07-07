@@ -5,7 +5,7 @@ import { Response } from './response.ts'
 interface PathHandler {
     method: Method;
     pattern: string;
-    match: (path: string) => any;
+    match: PathMatcher;
     end: EndHandler;
 }
 
@@ -24,6 +24,6 @@ type Query = { [key: string]: string | string[] };
 // HTTP params type
 type Params = { [key:string]: string };
 // Pathmatcher type
-type PathMatcher = (pattern: string) => (path: string) => Params | null;
+type PathMatcher = (request: Request, pattern: string) => Request;
 
 export { Method, Query, Params, PathMatcher, Handler, EndHandler, PathHandler, Middleware, Next };

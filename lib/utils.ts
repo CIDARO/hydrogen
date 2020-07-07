@@ -1,12 +1,13 @@
-import { Middleware, PathHandler } from "./types.ts";
+import { Middleware, PathHandler, Method } from "./types.ts";
 
-export const getNameFromPattern = (p: string) => {
-    const name = p.slice(1, -1).trim();
-    if (!name) {
-      throw new Error("invalid param name");
-    }
-    return name;
-}
+export const METHODS: Method[] = ["GET", "POST", "PATCH", "PUT", "DELETE"];
+
+export const DEFAULT_CORS_OPTIONS: any = {
+  origin: '*',
+  methods: METHODS.join(','),
+  preflight: true,
+  successStatus: 204,
+};
 
 export const isPathHandler = (middleware: Middleware): middleware is PathHandler => {
   return typeof middleware !== 'function';

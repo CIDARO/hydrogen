@@ -4,14 +4,14 @@ export class Request {
     path: string;
     search: string;
     query: Query;
-    params: Params = {};
+    // params: Params = {};
     data: any;
     extra: any = {};
     corsOptions: any = {};
     error?: Error;
 
     constructor(public raw: any) {
-        const url = new URL("http://a.b" + raw.url);
+        const url = new URL("http://hydro.gen" + raw.url);
         this.path = url.pathname;
         this.search = url.search;
         this.query = {};

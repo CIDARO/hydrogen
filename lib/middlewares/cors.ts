@@ -1,7 +1,7 @@
-import { Next, Middleware } from "./types.ts";
-import { Request } from "./request.ts";
-import { Response } from "./response.ts";
-import { isString } from "./utils.ts";
+import { Next, Middleware } from "../types.ts";
+import { Request } from "../request.ts";
+import { Response } from "../response.ts";
+import { isString } from "../utils.ts";
 
 const ACCESS_CONTROL_ALLOW_ORIGIN = "Access-Control-Allow-Origin";
 const ACCESS_CONTROL_ALLOW_METHODS = "Access-Control-Allow-Methods";
